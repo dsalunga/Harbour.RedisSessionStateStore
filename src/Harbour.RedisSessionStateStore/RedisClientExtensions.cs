@@ -22,7 +22,7 @@ namespace Harbour.RedisSessionStateStore
             for (var i = 0; i < keyValuePairsList.Count; i++)
             {
                 var kvp = keyValuePairsList[i];
-                keys[i] = kvp.Key.ToUtf8Bytes();
+                keys[i] = Encoding.UTF8.GetBytes(kvp.Key);
                 values[i] = kvp.Value;
             }
 
@@ -41,7 +41,7 @@ namespace Harbour.RedisSessionStateStore
 
             for (var i = 0; i < multiData.Length; i += 2)
             {
-                var key = multiData[i].FromUtf8Bytes();
+                var key = Encoding.UTF8.GetString(multiData[i]);
                 map[key] = multiData[i + 1];
             }
 
@@ -50,12 +50,12 @@ namespace Harbour.RedisSessionStateStore
 
         public static byte[] GetValueFromHashRaw(this IRedisClient client, string hashId, string key)
         {
-            return ((IRedisNativeClient)client).HGet(hashId, key.ToUtf8Bytes());
+            return ((IRedisNativeClient)client).HGet(hashId, Encoding.UTF8.GetBytes(key));
         }
 
         public static bool SetEntryInHashIfNotExists(this IRedisClient client, string hashId, string key, byte[] value)
         {
-            return ((IRedisNativeClient)client).HSetNX(hashId, key.ToUtf8Bytes(), value) == Success;
+            return ((IRedisNativeClient)client).HSetNX(hashId, Encoding.UTF8.GetBytes(key), value) == Success;
         }
     }
 }
